@@ -1,0 +1,25 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+*.out
+
+database.yml
+.env
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+*~
