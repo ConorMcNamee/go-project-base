@@ -9,7 +9,10 @@ import (
 func HandleRoutes() {
 
 	http.HandleFunc("/", handlers.Home)
-	http.HandleFunc("/login", handlers.Login)
+
+	loginHandler := http.HandlerFunc(handlers.Login)
+	http.Handle("/login", middleware.OnlyPost(loginHandler))
+
 	http.HandleFunc("/logout", handlers.Logout)
 
 	registerHandler := http.HandlerFunc(handlers.Register)

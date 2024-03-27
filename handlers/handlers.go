@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"gobaseproject/database"
 	"gobaseproject/models"
@@ -14,7 +15,22 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 
+	email := r.FormValue("email")
+
+	if email != "" {
+		u, err := database.GetUserByEmail(email)
+
+		fmt.Println(u, err)
+
+		userJson, err := json.Marshal(u)
+		fmt.Println("User JSON: ", userJson)
+		w.Write(userJson)
+		return
+	}
+
+	http.Error(w, "Error: Cannot find username with email address", 400)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +47,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	// Check to see if everything is of valid length's and types
 
-	// Hash Password
 	password, err := hashPassword(r.FormValue("password"))
+	if r.FormValue("password") == "" {
+		http.Error(w, "Error: Password Field is Invalid or Empty", 400)
+		return
+	}
+
 	if err != nil {
 		return
 	}
@@ -51,7 +71,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// VALIDATION TO CHECK IF USERNAME AND EMAIL IS UNIQUE
 
-	if u.FirstName != "" && u.LastName != "" && u.Email != "" && password != "" {
+	if u.FirstName != "" && u.LastName != "" && u.Email != "" {
 		fmt.Println("Creating User!")
 		result, err := database.CreateNewUser(u)
 
@@ -64,9 +84,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Creating User was Successful!")
 		}
 
+		userJson, err := json.Marshal(u)
+		w.Write(userJson)
+		return
+
 	} else {
 		http.Error(w, "Missing Form Items", 400)
+		return
 	}
-
-	// Add JSON response
 }

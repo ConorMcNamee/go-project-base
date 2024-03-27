@@ -13,8 +13,19 @@ func SetDB(a *config.AppConfig) {
 	app = a
 }
 
-func GetUserByEmail() {
+func GetUserByEmail(email string) (models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `select id, first_name, last_name, email, password, created_at, updated_at from users where email = $1`
 
+	var u models.User
+	row := app.DB.SQL.QueryRowContext(ctx, query, email)
+
+	if err := row.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Email, &u.Password, &u.Admin, &u.Age); err != nil {
+		return u, err
+	}
+
+	return u, nil
 }
 
 func GetUserByID(id int64) (models.User, error) {
