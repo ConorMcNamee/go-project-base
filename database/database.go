@@ -13,6 +13,10 @@ func SetDB(a *config.AppConfig) {
 	app = a
 }
 
+func GetUserByEmail() {
+
+}
+
 func GetUserByID(id int64) (models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -39,5 +43,7 @@ func CreateNewUser(u models.User) (int64, error) {
 	if err != nil {
 		panic(err)
 	}
+
+	// MUST RETURN USER ID
 	return 0, nil
 }

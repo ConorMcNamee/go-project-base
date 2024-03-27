@@ -40,7 +40,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Store in Database
 	var u models.User
 	u.FirstName = r.FormValue("first_name")
-	u.LastName = r.FormValue("first_name")
+	u.LastName = r.FormValue("last_name")
 	u.Email = r.FormValue("email")
 	u.Password = password // Stores password in plain text. Must be changed. THIS IS PURELY FOR TESTING PURPOSES
 	u.Admin = false
@@ -49,16 +49,23 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	u.Created_at = time.Now()
 	u.Updated_at = time.Now()
 
-	fmt.Println("Creating User!")
-	result, err := database.CreateNewUser(u)
+	// VALIDATION TO CHECK IF USERNAME AND EMAIL IS UNIQUE
 
-	if err != nil {
-		fmt.Println("Creating user failed")
-		return
-	}
+	if u.FirstName != "" && u.LastName != "" && u.Email != "" && password != "" {
+		fmt.Println("Creating User!")
+		result, err := database.CreateNewUser(u)
 
-	if result == 0 {
-		fmt.Println("Creating User was Successful!")
+		if err != nil {
+			fmt.Println("Creating user failed")
+			return
+		}
+
+		if result == 0 {
+			fmt.Println("Creating User was Successful!")
+		}
+
+	} else {
+		http.Error(w, "Missing Form Items", 400)
 	}
 
 	// Add JSON response
